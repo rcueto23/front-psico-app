@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     if (!loading) {
       if (isAuthenticated) {
-        router.push("/dashboard/pacientes");
+        router.push("/dashboard");
       } else {
         router.push("/login");
       }

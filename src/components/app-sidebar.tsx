@@ -35,7 +35,7 @@ const data = {
         },
         {
           title: "Citas",
-          url: "#",
+          url: "/dashboard/citas",
         },
         {
           title: "Historial Clínico",

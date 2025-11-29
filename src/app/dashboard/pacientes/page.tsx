@@ -589,6 +589,7 @@ export default function PacientesPage() {
                 >
                   <Calendar
                     mode="single"
+                    captionLayout="dropdown"
                     selected={form.nacimiento}
                     onSelect={(date) => {
                       handleChange("nacimiento", date ?? undefined);
