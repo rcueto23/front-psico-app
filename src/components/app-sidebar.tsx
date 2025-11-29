@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import {
-  Settings,
   Brain,
   ClipboardList,
 } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
+import Link from "next/link"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -38,23 +38,11 @@ const data = {
           url: "/dashboard/citas",
         },
         {
+          title: "Calendario",
+          url: "/dashboard/calendario",
+        },
+        {
           title: "Historial Clínico",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Configuración",
-      url: "#",
-      icon: Settings,
-      isActive: false,
-      items: [
-        {
-          title: "Perfil",
-          url: "#",
-        },
-        {
-          title: "Preferencias",
           url: "#",
         },
       ],
@@ -77,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
+              <Link href="/dashboard">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Brain className="size-4" />
                 </div>
@@ -85,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">Consultorio</span>
                   <span className="truncate text-xs">Psicológico</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

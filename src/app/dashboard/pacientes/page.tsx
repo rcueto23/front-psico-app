@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { UserRound } from "lucide-react";
+import { UserRound, Download } from "lucide-react";
+import { exportarPacientesAExcel } from "@/lib/exportar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -457,6 +458,14 @@ export default function PacientesPage() {
             </p>
           </div>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => exportarPacientesAExcel(pacientes)}
+          disabled={pacientes.length === 0}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Exportar a Excel
+        </Button>
       </header>
 
       <Card>

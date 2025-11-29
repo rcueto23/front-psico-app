@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar as CalendarIconHeader } from "lucide-react"
+import { Calendar as CalendarIconHeader, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { exportarCitasAExcel } from "@/lib/exportar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -211,12 +212,14 @@ function CitasDataTable({
 
 export default function CitasPage() {
   const [citas, setCitas] = useState<Cita[]>([])
+  const [citasFiltradas, setCitasFiltradas] = useState<Cita[]>([])
   const [pacientes, setPacientes] = useState<Paciente[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [editingCita, setEditingCita] = useState<Cita | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [filtroFecha, setFiltroFecha] = useState<"todas" | "hoy" | "semana" | "mes">("todas")
 
   const [formData, setFormData] = useState({
     pacienteId: "",
@@ -247,6 +250,53 @@ export default function CitasPage() {
   useEffect(() => {
     loadData()
   }, [])
+
+  useEffect(() => {
+    aplicarFiltroFecha()
+  }, [citas, filtroFecha])
+
+  const aplicarFiltroFecha = () => {
+    const ahora = new Date()
+    let filtradas = [...citas]
+
+    switch (filtroFecha) {
+      case "hoy":
+        filtradas = citas.filter((c) => {
+          const fechaCita = new Date(c.fecha)
+          return (
+            fechaCita.getDate() === ahora.getDate() &&
+            fechaCita.getMonth() === ahora.getMonth() &&
+            fechaCita.getFullYear() === ahora.getFullYear()
+          )
+        })
+        break
+      case "semana":
+        const inicioSemana = new Date(ahora)
+        inicioSemana.setDate(ahora.getDate() - ahora.getDay())
+        inicioSemana.setHours(0, 0, 0, 0)
+        const finSemana = new Date(inicioSemana)
+        finSemana.setDate(inicioSemana.getDate() + 6)
+        finSemana.setHours(23, 59, 59, 999)
+        filtradas = citas.filter((c) => {
+          const fechaCita = new Date(c.fecha)
+          return fechaCita >= inicioSemana && fechaCita <= finSemana
+        })
+        break
+      case "mes":
+        filtradas = citas.filter((c) => {
+          const fechaCita = new Date(c.fecha)
+          return (
+            fechaCita.getMonth() === ahora.getMonth() &&
+            fechaCita.getFullYear() === ahora.getFullYear()
+          )
+        })
+        break
+      default:
+        filtradas = citas
+    }
+
+    setCitasFiltradas(filtradas)
+  }
 
   const openCreate = () => {
     setEditingCita(null)
@@ -381,14 +431,57 @@ export default function CitasPage() {
             </p>
           </div>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => exportarCitasAExcel(citas)}
+          disabled={citas.length === 0}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Exportar a Excel
+        </Button>
       </header>
+
+      {/* Filtros de fecha */}
+      <div className="flex gap-2 flex-wrap mb-4">
+        <Button
+          variant={filtroFecha === "todas" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setFiltroFecha("todas")}
+        >
+          Todas
+        </Button>
+        <Button
+          variant={filtroFecha === "hoy" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setFiltroFecha("hoy")}
+        >
+          Hoy
+        </Button>
+        <Button
+          variant={filtroFecha === "semana" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setFiltroFecha("semana")}
+        >
+          Esta Semana
+        </Button>
+        <Button
+          variant={filtroFecha === "mes" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setFiltroFecha("mes")}
+        >
+          Este Mes
+        </Button>
+        <div className="ml-auto text-sm text-muted-foreground flex items-center">
+          {citasFiltradas.length} de {citas.length} citas
+        </div>
+      </div>
 
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Listado</CardTitle>
         </CardHeader>
         <CardContent>
-          <CitasDataTable data={citas} columns={columns} onCreate={openCreate} />
+          <CitasDataTable data={citasFiltradas} columns={columns} onCreate={openCreate} />
         </CardContent>
       </Card>
 

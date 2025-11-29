@@ -3,8 +3,9 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, Eye } from "lucide-react"
 import type { Paciente } from "@/lib/pacientes"
+import Link from "next/link"
 
 export function getPacienteColumns({
   onEdit,
@@ -23,9 +24,11 @@ export function getPacienteColumns({
         const p = row.original
         return (
           <div className="min-w-[220px]">
-            <div className="font-medium">
-              {p.nombres} {p.apellidos}
-            </div>
+            <Link href={`/dashboard/pacientes/${p.id}`} className="hover:underline">
+              <div className="font-medium text-blue-600 hover:text-blue-800">
+                {p.nombres} {p.apellidos}
+              </div>
+            </Link>
             {p.etiquetas && (
               <div className="mt-1 flex flex-wrap gap-1">
                 {p.etiquetas.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 3).map((t) => (
@@ -97,7 +100,12 @@ export function getPacienteColumns({
       cell: ({ row }) => {
         const p = row.original
         return (
-          <div className="flex justify-start gap-2 min-w-[100px]">
+          <div className="flex justify-start gap-2 min-w-[130px]">
+            <Link href={`/dashboard/pacientes/${p.id}`}>
+              <Button size="icon" variant="ghost" aria-label="Ver perfil">
+                <Eye className="h-4 w-4 text-blue-600" />
+              </Button>
+            </Link>
             <Button size="icon" variant="ghost" onClick={() => onEdit(p)} aria-label="Editar">
               <Pencil className="h-4 w-4" />
             </Button>
